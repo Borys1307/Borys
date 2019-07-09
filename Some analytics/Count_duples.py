@@ -18,26 +18,33 @@ filenames = ['C:/Users/chernyshov/Downloads/Referrals-(toggl.com)-(2019_03_01-20
 'C:/Users/chernyshov/Downloads/Referrals-(hellobonsai.com)-(2019_03_01-2019_05_31).xlsx',
 'C:/Users/chernyshov/Downloads/Referrals-(azendoo.com)-(2019_03_01-2019_05_31).xlsx']
 dfs1 = dict()
-answe = {}
-df1 = pd.DataFrame()
+answer = []
+duples = {}
 for i in range(len(filenames)):        
     xl_file = pd.ExcelFile(filenames[i])
     dfs = {sheet_name: xl_file.parse(sheet_name) 
           for sheet_name in xl_file.sheet_names}
     name = dfs['Report Details']['Unnamed: 1'][2].split()[2]
+    duples[name] = []
     if name not in dfs1:
         dfs1[name] = {sheet_name: xl_file.parse(sheet_name) 
-          for sheet_name in xl_file.sheet_names if sheet_name !='Report Details' and sheet_name !='Monthly Data'}    
-    df = dfs1[name]['Aggregated Data for Time Period']
-    df = df.loc[df['Traffic Share'] > 0.01]
-    answe [name] = df
-    df1 = df1.append(df, ignore_index=True)
-sites = pd.read_csv('C:/Users/chernyshov/Python/t.csv')
-#print(df1['Traffic Share'])
-listw = []
-for i in sites['Domain']:
-    listw.append(i)
-df1 = df1.loc[df1['Domain'].isin(listw) == False]
-df1 = df1.sort_values(by='Domain', ascending = True)
-print(df1)
-df1.to_csv('C:/Users/chernyshov/Python/t1.csv')	 
+          for sheet_name in xl_file.sheet_names if sheet_name !='Report Details'}    
+    for j in dfs1[name]['Aggregated Data for Time Period']['Domain']:
+        dlina = len(dfs1.keys())        
+        if j not in answer:
+            answer.append(j)            
+        else:
+            duples[name].append(j)
+    if duples[name] == []:
+        duples.pop(name)  
+calc = {}          
+for i in duples.keys():
+    for j in duples[i]:
+        if j not in calc:
+            calc[j] = 1
+        else:
+            calc[j] +=1
+sa = pd.DataFrame.from_dict(calc, orient = 'index', columns = ['Values'])
+sa.index = sa.index.set_names(['Domain'])
+sa = sa.sort_values(by=['Values'], ascending = False)
+sa.to_csv('C:/Users/chernyshov/Python/t.csv')
