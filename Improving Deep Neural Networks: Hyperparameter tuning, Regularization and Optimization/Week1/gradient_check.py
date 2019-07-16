@@ -1,6 +1,6 @@
 # Packages
 import numpy as np
-from testCases import *
+from test_Cases import *
 from gc_utils import sigmoid, relu, dictionary_to_vector, vector_to_dictionary, gradients_to_vector
 
 # GRADED FUNCTION: forward_propagation
